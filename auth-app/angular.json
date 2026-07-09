@@ -19,7 +19,10 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "ssr": false,
+            "prerender": false,
             "assets": [
+
               {
                 "glob": "**/*",
                 "input": "public"
