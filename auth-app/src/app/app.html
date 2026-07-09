@@ -1,0 +1,53 @@
+<!-- AUTHENTICATED FLOATING NAV -->
+@if (isLoggedIn) {
+  <header class="app-header">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-icon">✦</div>
+        <span class="brand-name">PostScheduler</span>
+      </div>
+
+      <nav class="nav-links">
+        <a routerLink="/dashboard"         routerLinkActive="active" class="nav-btn">Dashboard</a>
+        <a routerLink="/create-post"       routerLinkActive="active" class="nav-btn">Create Post</a>
+        <a routerLink="/scheduled-posts"   routerLinkActive="active" class="nav-btn">Scheduled</a>
+        <a routerLink="/connect-platforms" routerLinkActive="active" class="nav-btn">Platforms</a>
+        <a routerLink="/social-accounts"   routerLinkActive="active" class="nav-btn">Accounts</a>
+      </nav>
+
+      <div class="nav-user">
+        <div class="user-badge">
+          <div class="user-avatar">{{ (currentUser || 'U').charAt(0).toUpperCase() }}</div>
+          <span class="user-name">{{ currentUser }}</span>
+        </div>
+        <button class="logout-btn" (click)="logout()">Sign out</button>
+      </div>
+    </div>
+  </header>
+}
+
+<!-- GUEST NAV -->
+@if (!isLoggedIn) {
+  <header class="app-header">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-icon">✦</div>
+        <span class="brand-name">PostScheduler</span>
+      </div>
+      <nav class="nav-links">
+        <a routerLink="/login"    routerLinkActive="active" class="nav-btn">Sign In</a>
+        <a routerLink="/register" routerLinkActive="active" class="nav-btn">Create Account</a>
+      </nav>
+    </div>
+  </header>
+}
+
+<main class="app-main">
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
+</main>
+
+<footer class="app-footer">
+  <p>© 2026 PostScheduler — Premium Multi-Platform Social Media Scheduler</p>
+</footer>

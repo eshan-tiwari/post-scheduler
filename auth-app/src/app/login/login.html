@@ -1,0 +1,67 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-brand">
+      <div class="auth-logo">✦</div>
+      <h1 class="auth-title">Welcome Back</h1>
+      <p class="auth-subtitle">Sign in to your PostScheduler account</p>
+    </div>
+
+    @if (successMessage) {
+      <div class="alert alert-success">
+        <span>✓</span><span>{{ successMessage }}</span>
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="alert alert-danger">
+        <span>✕</span><span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-wrapper">
+          <input type="email" id="email" formControlName="email"
+            placeholder="yourname@example.com"
+            [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" />
+        </div>
+        @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+          <div class="error-feedback">
+            @if (loginForm.get('email')?.errors?.['required']) { Email is required. }
+            @if (loginForm.get('email')?.errors?.['email']) { Enter a valid email address. }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <input type="password" id="password" formControlName="password"
+            placeholder="••••••••••"
+            [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
+        </div>
+        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          <div class="error-feedback">
+            @if (loginForm.get('password')?.errors?.['required']) { Password is required. }
+            @if (loginForm.get('password')?.errors?.['minlength']) { Minimum 6 characters. }
+          </div>
+        }
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="isLoading || loginForm.invalid">
+        @if (isLoading) {
+          <span class="spinner"></span> Signing in...
+        } @else {
+          Sign In
+        }
+      </button>
+    </form>
+
+    <div class="card-footer">
+      <p>New to PostScheduler? <a routerLink="/register" class="link">Create a free account</a></p>
+    </div>
+
+  </div>
+</div>

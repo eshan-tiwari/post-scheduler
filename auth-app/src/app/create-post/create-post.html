@@ -1,0 +1,193 @@
+<div class="create-post-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Create Scheduled Post</h1>
+      <p class="page-subtitle">Publish content across multiple platforms simultaneously</p>
+    </div>
+    <a routerLink="/scheduled-posts" class="btn-outline">← View Scheduled Posts</a>
+  </div>
+
+  <!-- Messages -->
+  @if (successMessage) {
+    <div class="alert alert-success">{{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+
+
+
+  <!-- Form Card -->
+  <div class="form-card">
+    <form [formGroup]="postForm" (ngSubmit)="onSubmit()" novalidate>
+
+      <!-- Platforms Multi-select -->
+      <div class="form-group">
+        <label class="form-label">Select Platforms <span class="required">*</span></label>
+        <div class="platforms-selector">
+          @for (plat of platforms; track plat.key) {
+            <button
+              type="button"
+              class="platform-select-btn"
+              [class.active]="isPlatformSelected(plat.key)"
+              (click)="togglePlatform(plat.key)"
+            >
+              <span class="platform-btn-text">{{ plat.label }}</span>
+              @if (isPlatformSelected(plat.key)) {
+                <span class="checkmark">✓</span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Post Title -->
+      <div class="form-group">
+        <label class="form-label" for="post-title">Post Title <span class="required">*</span></label>
+        <input
+          id="post-title"
+          type="text"
+          class="form-input"
+          [class.input-error]="isInvalid('title')"
+          formControlName="title"
+          placeholder="Enter a descriptive title (not published, used for management)..."
+          autocomplete="off"
+        />
+        @if (isInvalid('title')) {
+          <span class="error-text">
+            @if (postForm.get('title')?.errors?.['required']) { Title is required. }
+            @else if (postForm.get('title')?.errors?.['minlength']) { Title must be at least 3 characters. }
+            @else if (postForm.get('title')?.errors?.['maxlength']) { Title must be under 100 characters. }
+          </span>
+        }
+      </div>
+
+      <!-- Post Content -->
+      <div class="form-group">
+        <label class="form-label" for="post-content">
+          Post Content <span class="required">*</span>
+          <span class="char-counter" [class]="charLimitClass">{{ charCount }} / {{ charLimit }}</span>
+        </label>
+        <textarea
+          id="post-content"
+          class="form-input form-textarea"
+          [class.input-error]="isInvalid('content')"
+          formControlName="content"
+          rows="5"
+          placeholder="Write your update here... hashtags and mentions are supported."
+        ></textarea>
+        @if (isInvalid('content')) {
+          <span class="error-text">
+            @if (postForm.get('content')?.errors?.['required']) { Content is required. }
+            @else if (postForm.get('content')?.errors?.['minlength']) { Content must be at least 5 characters. }
+          </span>
+        }
+      </div>
+
+      <!-- Media Attachments -->
+      <div class="form-group">
+        <label class="form-label">Media Attachments (Images or Videos)</label>
+        <div class="file-upload-zone">
+          <input
+            type="file"
+            id="media-files"
+            multiple
+            accept="image/*,video/*"
+            class="hidden-file-input"
+            (change)="onFileSelected($event)"
+          />
+          <label for="media-files" class="upload-btn">
+            🖼️ Choose Media Files
+          </label>
+          <span class="upload-hint">Upload up to 4 images or video clips (max 10MB each)</span>
+        </div>
+
+        <!-- Previews -->
+        @if (mediaPreviews.length > 0) {
+          <div class="media-previews-grid">
+            @for (prev of mediaPreviews; track prev; let idx = $index) {
+              <div class="media-preview-card">
+                <img [src]="prev" alt="Attachment Preview" class="preview-img" />
+                <button type="button" class="btn-remove-media" (click)="removeMedia(idx)" title="Remove item">
+                  ✕
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Schedule Configurations -->
+      <div class="form-row">
+        <!-- Date -->
+        <div class="form-group">
+          <label class="form-label" for="scheduled-date">Schedule Date <span class="required">*</span></label>
+          <input
+            id="scheduled-date"
+            type="date"
+            class="form-input"
+            [class.input-error]="isInvalid('scheduled_date')"
+            formControlName="scheduled_date"
+          />
+          @if (isInvalid('scheduled_date')) {
+            <span class="error-text">Date is required.</span>
+          }
+        </div>
+
+        <!-- Time -->
+        <div class="form-group">
+          <label class="form-label" for="scheduled-time">Schedule Time <span class="required">*</span></label>
+          <input
+            id="scheduled-time"
+            type="time"
+            class="form-input"
+            [class.input-error]="isInvalid('scheduled_time')"
+            formControlName="scheduled_time"
+          />
+          @if (isInvalid('scheduled_time')) {
+            <span class="error-text">Time is required.</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Timezone -->
+        <div class="form-group">
+          <label class="form-label" for="timezone">Timezone <span class="required">*</span></label>
+          <select id="timezone" class="form-input" formControlName="timezone">
+            <option value="UTC">UTC (GMT+00:00)</option>
+            <option value="Asia/Kolkata">India Standard Time (IST - GMT+05:30)</option>
+            <option value="America/New_York">Eastern Time (EST - GMT-05:00)</option>
+            <option value="Europe/London">London Time (GMT+00:00 / BST)</option>
+          </select>
+        </div>
+
+        <!-- Recurrence -->
+        <div class="form-group">
+          <label class="form-label" for="recurrence">Recurrence <span class="required">*</span></label>
+          <select id="recurrence" class="form-input" formControlName="recurrence">
+            <option value="once">Run Once</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Submit Action -->
+      <div class="form-actions">
+        <button type="submit" class="btn-submit" [disabled]="isLoading">
+          @if (isLoading) {
+            <span class="btn-spinner"></span> Scheduling...
+          } @else {
+            🚀 Schedule Auto-Post
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>

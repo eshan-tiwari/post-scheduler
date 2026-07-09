@@ -1,0 +1,28 @@
+# ==========================================
+# Laravel Backend
+# ==========================================
+laravel-backend/vendor/
+laravel-backend/.env
+laravel-backend/.env.backup
+laravel-backend/storage/logs/*.log
+laravel-backend/storage/framework/cache/
+laravel-backend/storage/framework/sessions/
+laravel-backend/storage/framework/views/
+laravel-backend/bootstrap/cache/*.php
+laravel-backend/public/hot
+laravel-backend/public/storage
+
+# ==========================================
+# Angular Frontend
+# ==========================================
+auth-app/node_modules/
+auth-app/dist/
+auth-app/.angular/
+
+# ==========================================
+# OS / Editor
+# ==========================================
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+*.log

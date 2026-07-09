@@ -1,0 +1,166 @@
+<div class="scheduled-posts-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Scheduled Posts</h1>
+      <p class="page-subtitle">View, edit, and orchestrate all scheduled social media posts</p>
+    </div>
+    <a routerLink="/create-post" class="btn-primary">+ New Post</a>
+  </div>
+
+  <!-- Messages -->
+  @if (successMessage) {
+    <div class="alert alert-success">{{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+
+  <!-- Filtering Header -->
+  <div class="filter-header-card">
+    <div class="search-box-container">
+      🔍 <input type="text" placeholder="Search posts by title or content..." class="search-input" (input)="onSearch($event)" [value]="searchQuery" />
+    </div>
+    <div class="filter-tabs">
+      @for (status of ['All', 'Pending', 'Published', 'Failed', 'Paused']; track status) {
+        <button
+          type="button"
+          class="filter-tab-btn"
+          [class.active]="selectedStatus === status"
+          (click)="onStatusFilterChange(status)"
+        >
+          {{ status }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Updating scheduled post list...</p>
+    </div>
+  }
+
+  @if (!isLoading) {
+
+    <!-- Empty State -->
+    @if (posts.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>No scheduled posts found</h3>
+        <p>Try resetting filters or write a new post to schedule!</p>
+        <a routerLink="/create-post" class="btn-primary">Schedule a Post</a>
+      </div>
+    }
+
+    <!-- Posts Table -->
+    @if (posts.length > 0) {
+      <div class="table-card">
+        <div class="table-wrapper">
+          <table class="posts-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Title & Countdown</th>
+                <th>Platforms</th>
+                <th>Frequency</th>
+                <th>Scheduled At</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (post of posts; track post.id; let i = $index) {
+                <tr [class.overdue-row]="isOverdue(post)" [class.paused-row]="post.status === 'Paused'">
+                  <td class="td-index">{{ (currentPage - 1) * 15 + i + 1 }}</td>
+                  <td class="td-title">
+                    <span class="post-title-text">{{ post.title }}</span>
+                    <span class="post-preview-text">{{ post.content | slice:0:70 }}{{ post.content.length > 70 ? '...' : '' }}</span>
+                    @if (post.status === 'Pending') {
+                      <span class="countdown-label">⏱️ {{ getCountdown(post.scheduled_at) }}</span>
+                    }
+                    @if (post.failed_reason) {
+                      <span class="error-badge-detail" [title]="post.failed_reason">⚠️ Error: {{ post.failed_reason | slice:0:80 }}...</span>
+                    }
+                  </td>
+                  <td class="td-platforms">
+                    <div class="platforms-badges-row">
+                      @for (p of post.platforms || [post.platform]; track p) {
+                        <span class="badge-chip" [class]="'badge-' + p.replace('/', '').toLowerCase()">
+                          {{ p === 'X/Twitter' ? '𝕏' : p === 'Instagram' ? '📸' : p === 'Facebook' ? '👥' : '💼' }} {{ p }}
+                        </span>
+                      }
+                    </div>
+                  </td>
+                  <td class="td-recurrence">
+                    <span class="recurrence-badge" [class.badge-recur]="post.recurrence !== 'once'">
+                      🔄 {{ post.recurrence }}
+                    </span>
+                  </td>
+                  <td class="td-date">{{ formatDate(post.scheduled_at) }}</td>
+                  <td class="td-status">
+                    <span class="status-badge"
+                      [class.status-pending]="post.status === 'Pending'"
+                      [class.status-paused]="post.status === 'Paused'"
+                      [class.status-published]="post.status === 'Published'"
+                      [class.status-failed]="post.status === 'Failed'"
+                      [class.status-publishing]="post.status === 'Publishing'"
+                    >
+                      {{ post.status }}
+                    </span>
+                  </td>
+                  <td class="td-actions">
+                    <div class="action-buttons-group">
+                      <!-- Pause / Resume -->
+                      @if (post.status === 'Pending' || post.status === 'Paused') {
+                        <button class="btn-action-icon btn-pause" (click)="togglePause(post)" [title]="post.status === 'Paused' ? 'Resume Schedule' : 'Pause Schedule'">
+                          {{ post.status === 'Paused' ? '▶️' : '⏸️' }}
+                        </button>
+                      }
+
+                      <!-- Retry for failed -->
+                      @if (post.status === 'Failed') {
+                        <button class="btn-action-icon btn-retry" (click)="retryPublish(post)" title="Retry immediately">
+                          🔄
+                        </button>
+                      }
+
+                      <!-- Duplicate -->
+                      <button class="btn-action-icon btn-copy" (click)="duplicatePost(post)" title="Duplicate Post Details">
+                        📋
+                      </button>
+
+                      <!-- Delete -->
+                      <button class="btn-action-icon btn-delete" (click)="deletePost(post)" title="Delete post">
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Footer -->
+        @if (lastPage > 1) {
+          <div class="pagination-footer">
+            <button class="pagination-btn" [disabled]="currentPage === 1" (click)="loadPosts(currentPage - 1)">
+              Previous
+            </button>
+            <span class="pagination-info">Page {{ currentPage }} of {{ lastPage }}</span>
+            <button class="pagination-btn" [disabled]="currentPage === lastPage" (click)="loadPosts(currentPage + 1)">
+              Next
+            </button>
+          </div>
+        }
+
+      </div>
+    }
+
+  }
+
+</div>

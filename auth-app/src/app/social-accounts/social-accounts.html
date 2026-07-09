@@ -1,0 +1,120 @@
+<div class="social-accounts-page">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Connected Accounts</h1>
+      <p class="page-subtitle">Link your social media profiles to enable scheduled auto-posting</p>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  @if (successMessage) {
+    <div class="alert alert-success">✔ {{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error">✕ {{ errorMessage }}</div>
+  }
+
+  <!-- Stats Summary Bar -->
+  @if (!isLoading) {
+    <div class="stats-summary">
+      <div class="summary-card card-total">
+        <div class="summary-icon">🔗</div>
+        <div class="summary-info">
+          <span class="summary-number">{{ platformsList.length }}</span>
+          <span class="summary-label">Total Platforms</span>
+        </div>
+      </div>
+      <div class="summary-card card-connected">
+        <div class="summary-icon">✦</div>
+        <div class="summary-info">
+          <span class="summary-number">{{ getConnectedCount() }}</span>
+          <span class="summary-label">Connected</span>
+        </div>
+      </div>
+      <div class="summary-card card-pending">
+        <div class="summary-icon">○</div>
+        <div class="summary-info">
+          <span class="summary-number">{{ platformsList.length - getConnectedCount() }}</span>
+          <span class="summary-label">Not Connected</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading connected accounts...</p>
+    </div>
+  }
+
+  @if (!isLoading) {
+    <div class="platforms-grid">
+      @for (plat of platformsList; track plat.key) {
+        @let details = getAccountDetails(plat.key);
+        <div class="platform-card"
+             [class.card-connected]="details !== undefined"
+             [style.border-top-color]="details !== undefined ? '#B88432' : 'rgba(255,255,255,0.1)'">
+
+          <div class="card-header">
+            <span class="platform-icon"
+                  [style.background-color]="plat.color + '18'"
+                  [style.color]="plat.color">
+              {{ plat.icon }}
+            </span>
+            <div class="platform-meta">
+              <h3 class="platform-name">{{ plat.label }}</h3>
+              <span class="status-indicator" [class.status-connected]="details !== undefined">
+                {{ details !== undefined ? '● Connected' : '○ Not Connected' }}
+              </span>
+            </div>
+          </div>
+
+          <p class="platform-desc">{{ plat.desc }}</p>
+
+          <!-- Bluesky — uses API key, not OAuth -->
+          @if (plat.usesApiKey) {
+            <div class="apikey-notice">
+              🔑 Uses handle + app password — configure in <strong>Platforms</strong> page.
+            </div>
+            <div class="card-actions">
+              <button (click)="navigateToConnect()" class="btn-primary">
+                Configure Credentials
+              </button>
+            </div>
+          }
+
+          <!-- OAuth-based platforms -->
+          @else if (details) {
+            <div class="account-profile">
+              <img [src]="details.avatar_url || 'https://api.dicebear.com/7.x/initials/svg?seed=' + details.username"
+                   alt="Avatar" class="profile-avatar" />
+              <div class="profile-meta">
+                <span class="profile-name">{{ details.username }}</span>
+                <span class="profile-id">ID: {{ details.platform_user_id }}</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button (click)="connectAccount(plat.key)" class="btn-secondary">Reconnect</button>
+              <button (click)="disconnectAccount(plat.key)" class="btn-disconnect">Disconnect</button>
+            </div>
+          } @else {
+            <div class="empty-profile">
+              <p>No account linked yet.</p>
+            </div>
+            <div class="card-actions">
+              <button (click)="connectAccount(plat.key)" class="btn-primary">
+                Connect {{ plat.label }}
+              </button>
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+  }
+
+</div>
