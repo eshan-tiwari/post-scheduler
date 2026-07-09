@@ -10,10 +10,13 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, FormsModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -23,6 +26,9 @@ export class Register {
   errorMessage = '';
   successMessage = '';
 
+  showApiConfig = false;
+  customApiUrl = '';
+
   // Laravel API endpoint
   private readonly API_URL = '/api/register';
 
@@ -31,6 +37,7 @@ export class Register {
     private http: HttpClient,
     private router: Router
   ) {
+    this.customApiUrl = typeof window !== 'undefined' ? (localStorage.getItem('BACKEND_API_URL') ?? '') : '';
     this.registerForm = this.fb.group(
       {
         name: ['', [Validators.required, Validators.minLength(2)]],
@@ -41,6 +48,23 @@ export class Register {
       { validators: this.passwordMatchValidator }
     );
   }
+
+  toggleApiConfig() {
+    this.showApiConfig = !this.showApiConfig;
+  }
+
+  saveApiConfig() {
+    if (this.customApiUrl.trim()) {
+      localStorage.setItem('BACKEND_API_URL', this.customApiUrl.trim());
+      alert('Backend URL saved successfully! The page will now reload.');
+      window.location.reload();
+    } else {
+      localStorage.removeItem('BACKEND_API_URL');
+      alert('Cleared custom backend URL. Using default relative proxy.');
+      window.location.reload();
+    }
+  }
+
 
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.get('password');

@@ -91,7 +91,20 @@
 
     <div class="card-footer">
       <p>Already have an account? <a routerLink="/login" class="link">Sign in here</a></p>
+      
+      <div class="api-config-section">
+        <button type="button" (click)="toggleApiConfig()" class="api-config-toggle">
+          ⚙️ Backend Tunnel Settings
+        </button>
+        @if (showApiConfig) {
+          <div class="api-config-panel">
+            <input type="text" [(ngModel)]="customApiUrl" placeholder="https://xxxx.loca.lt" class="api-config-input" />
+            <button type="button" (click)="saveApiConfig()" class="api-config-save-btn">Save</button>
+          </div>
+        }
+      </div>
     </div>
+
 
   </div>
 </div>

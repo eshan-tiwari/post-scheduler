@@ -61,7 +61,20 @@
 
     <div class="card-footer">
       <p>New to PostScheduler? <a routerLink="/register" class="link">Create a free account</a></p>
+      
+      <div class="api-config-section">
+        <button type="button" (click)="toggleApiConfig()" class="api-config-toggle">
+          ⚙️ Backend Tunnel Settings
+        </button>
+        @if (showApiConfig) {
+          <div class="api-config-panel">
+            <input type="text" [(ngModel)]="customApiUrl" placeholder="https://xxxx.loca.lt" class="api-config-input" />
+            <button type="button" (click)="saveApiConfig()" class="api-config-save-btn">Save</button>
+          </div>
+        }
+      </div>
     </div>
+
 
   </div>
 </div>

@@ -3,10 +3,13 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -15,6 +18,9 @@ export class Login {
   isLoading = false;
   errorMessage = '';
   successMessage = '';
+  
+  showApiConfig = false;
+  customApiUrl = '';
 
   private readonly API_URL = '/api/login';
 
@@ -23,11 +29,29 @@ export class Login {
     private http: HttpClient,
     private router: Router
   ) {
+    this.customApiUrl = typeof window !== 'undefined' ? (localStorage.getItem('BACKEND_API_URL') ?? '') : '';
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
+
+  toggleApiConfig() {
+    this.showApiConfig = !this.showApiConfig;
+  }
+
+  saveApiConfig() {
+    if (this.customApiUrl.trim()) {
+      localStorage.setItem('BACKEND_API_URL', this.customApiUrl.trim());
+      alert('Backend URL saved successfully! The page will now reload.');
+      window.location.reload();
+    } else {
+      localStorage.removeItem('BACKEND_API_URL');
+      alert('Cleared custom backend URL. Using default relative proxy.');
+      window.location.reload();
+    }
+  }
+
 
   onSubmit() {
     if (this.loginForm.invalid) {
