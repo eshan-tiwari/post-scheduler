@@ -1,5 +1,4 @@
 {
-  "version": 2,
   "cleanUrls": true,
   "rewrites": [
     {
@@ -10,7 +9,5 @@
       "source": "/((?!api/|.*\\.).*)",
       "destination": "/index.html"
     }
-
   ]
 }
-
