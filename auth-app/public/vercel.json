@@ -3,8 +3,9 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "http://127.0.0.1:8000/api/$1"
+      "destination": "https://tricky-radios-carry.loca.lt/api/$1"
     },
+
     {
       "source": "/((?!api/|.*\\.).*)",
       "destination": "/index.html"
