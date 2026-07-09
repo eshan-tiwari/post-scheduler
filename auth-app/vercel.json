@@ -7,9 +7,10 @@
       "destination": "http://127.0.0.1:8000/api/$1"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/|.*\\.).*)",
       "destination": "/index.html"
     }
+
   ]
 }
 
