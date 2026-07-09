@@ -1,14 +1,14 @@
 {
   "version": 2,
+  "framework": null,
+  "buildCommand": "true",
+  "installCommand": "composer install --no-dev --optimize-autoloader",
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.7.2"
     }
   },
   "routes": [
-    { "src": "/favicon.ico", "dest": "/public/favicon.ico" },
-    { "src": "/robots.txt", "dest": "/public/robots.txt" },
-    { "src": "/(.+\\.(?:css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))", "dest": "/public/$1" },
     { "src": "/(.*)", "dest": "/api/index.php" }
   ]
 }
