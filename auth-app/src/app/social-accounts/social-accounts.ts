@@ -20,10 +20,12 @@ export class SocialAccounts implements OnInit {
   platformsList: { key: string; label: string; icon: string; color: string; desc: string; usesApiKey?: boolean }[] = [
     { key: 'twitter',   label: 'X / Twitter',          icon: '𝕏',   color: '#1da1f2', desc: 'Post tweets, images, and threads.' },
     { key: 'bluesky',   label: 'Bluesky',               icon: '🦋',  color: '#0085ff', desc: 'Post to Bluesky using your handle and app password.', usesApiKey: true },
+    { key: 'reddit',    label: 'Reddit Subreddit',      icon: '🤖',  color: '#ff4500', desc: 'Auto-publish posts to your moderated subreddits.', usesApiKey: true },
     { key: 'instagram', label: 'Instagram Business',    icon: '📸',  color: '#e1306c', desc: 'Publish business photos & videos.' },
     { key: 'facebook',  label: 'Facebook Pages',        icon: '👥',  color: '#1877f2', desc: 'Manage & publish to your pages.' },
     { key: 'linkedin',  label: 'LinkedIn Profile',      icon: '💼',  color: '#0a66c2', desc: 'Share articles and business updates.' }
   ];
+
 
   constructor(private postService: PostService, private cdr: ChangeDetectorRef, private router: Router) {}
 
