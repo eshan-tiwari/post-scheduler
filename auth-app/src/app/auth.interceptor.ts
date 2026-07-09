@@ -8,12 +8,27 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   
   let modifiedReq = req;
   if (req.url.startsWith('/api/')) {
-    const customApiUrl = typeof window !== 'undefined' ? localStorage.getItem('BACKEND_API_URL') : null;
+    let customApiUrl = typeof window !== 'undefined' ? localStorage.getItem('BACKEND_API_URL') : null;
+    
+    // Auto-detect production mode and fallback to active localtunnel
+    if (!customApiUrl && typeof window !== 'undefined' && 
+        !window.location.hostname.includes('localhost') && 
+        !window.location.hostname.includes('127.0.0.1')) {
+      customApiUrl = 'https://tricky-radios-carry.loca.lt';
+    }
+
     if (customApiUrl) {
       const base = customApiUrl.endsWith('/') ? customApiUrl.slice(0, -1) : customApiUrl;
-      modifiedReq = req.clone({ url: base + req.url });
+      modifiedReq = req.clone({
+        url: base + req.url,
+        setHeaders: {
+          'Bypass-Tunnel-Reminder': 'true',
+          'ngrok-skip-browser-warning': 'true'
+        }
+      });
     }
   }
+
 
   return next(modifiedReq).pipe(
     catchError((err) => {
