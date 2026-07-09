@@ -8,10 +8,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   
   let modifiedReq = req;
   if (req.url.startsWith('/api/')) {
-    const customApiUrl = typeof window !== 'undefined' ? localStorage.getItem('BACKEND_API_URL') : null;
+    // 1. User-saved URL takes priority
+    let backendUrl = typeof window !== 'undefined' ? localStorage.getItem('BACKEND_API_URL') : null;
 
-    if (customApiUrl) {
-      const base = customApiUrl.endsWith('/') ? customApiUrl.slice(0, -1) : customApiUrl;
+    // 2. If no custom URL and we're on the deployed site (not localhost), use the fixed tunnel
+    if (!backendUrl && typeof window !== 'undefined' &&
+        !window.location.hostname.includes('localhost') &&
+        !window.location.hostname.includes('127.0.0.1')) {
+      backendUrl = 'https://postscheduler-api.loca.lt';
+    }
+
+    if (backendUrl) {
+      const base = backendUrl.endsWith('/') ? backendUrl.slice(0, -1) : backendUrl;
       modifiedReq = req.clone({
         url: base + req.url,
         setHeaders: {

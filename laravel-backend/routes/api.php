@@ -21,12 +21,21 @@ Route::get('/test', function () {
     ]);
 });
 
+// CORS preflight for auth routes
+Route::options('/register', function () {
+    return response()->json([], 204);
+});
+Route::options('/login', function () {
+    return response()->json([], 204);
+});
+
 // Auth Routes (Public)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
 Route::get('/login', function () {
     return response()->json(['message' => 'Unauthenticated.'], 401);
 })->name('login');
+
 
 // OAuth Callback (Public)
 Route::get('/social/callback/{platform}', [SocialAccountController::class, 'handleProviderCallback'])->name('social.callback');
