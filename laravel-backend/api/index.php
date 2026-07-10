@@ -44,5 +44,18 @@ $_ENV['QUEUE_CONNECTION'] = 'sync';
 $_SERVER['QUEUE_CONNECTION'] = 'sync';
 
 // Boot Laravel
-require __DIR__ . '/../public/index.php';
+try {
+    require __DIR__ . '/../public/index.php';
+} catch (\Throwable $e) {
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode([
+        'error' => true,
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => explode("\n", $e->getTraceAsString())
+    ], JSON_PRETTY_PRINT);
+    exit;
+}
 
