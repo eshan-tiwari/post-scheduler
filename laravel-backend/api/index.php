@@ -52,6 +52,10 @@ putenv("QUEUE_CONNECTION=sync");
 $_ENV['QUEUE_CONNECTION'] = 'sync';
 $_SERVER['QUEUE_CONNECTION'] = 'sync';
 
+// Override script name so Laravel does not auto-strip /api from request path
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['PHP_SELF'] = '/index.php';
+
 // Boot Laravel
 try {
     require __DIR__ . '/../public/index.php';
