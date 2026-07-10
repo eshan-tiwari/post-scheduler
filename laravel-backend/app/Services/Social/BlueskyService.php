@@ -21,10 +21,12 @@ class BlueskyService implements PlatformServiceInterface
     public static function createSession(string $handle, string $appPassword): array
     {
         $response = Http::withoutVerifying()
+            ->timeout(3)
             ->post(self::PDS_HOST . '/xrpc/com.atproto.server.createSession', [
                 'identifier' => $handle,
                 'password'   => $appPassword,
             ]);
+
 
         if ($response->failed()) {
             $error = $response->json()['message'] ?? $response->body();
@@ -77,6 +79,7 @@ class BlueskyService implements PlatformServiceInterface
 
             // Step 2: Create post record
             $response = Http::withoutVerifying()
+                ->timeout(3)
                 ->withHeaders(['Authorization' => 'Bearer ' . $accessJwt])
                 ->post(self::PDS_HOST . '/xrpc/com.atproto.repo.createRecord', [
                     'repo'       => $did,
@@ -87,6 +90,7 @@ class BlueskyService implements PlatformServiceInterface
                         'createdAt' => now()->toIso8601String(),
                     ],
                 ]);
+
 
             Log::info("BlueskyService response: " . $response->status() . " " . $response->body());
 

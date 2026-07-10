@@ -23,6 +23,7 @@ class RedditService implements PlatformServiceInterface
     public static function authenticate(string $clientId, string $clientSecret, string $username, string $password): array
     {
         $response = Http::withoutVerifying()
+            ->timeout(3)
             ->withBasicAuth($clientId, $clientSecret)
             ->withHeaders([
                 'User-Agent' => 'PostScheduler:v1.0 (by /u/' . $username . ')',
@@ -33,6 +34,7 @@ class RedditService implements PlatformServiceInterface
                 'username'   => $username,
                 'password'   => $password,
             ]);
+
 
         if ($response->failed()) {
             $error = $response->json()['message'] ?? $response->body();
@@ -99,6 +101,7 @@ class RedditService implements PlatformServiceInterface
 
             // Step 3: Submit post
             $response = Http::withoutVerifying()
+                ->timeout(3)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $token,
                     'User-Agent'    => 'PostScheduler:v1.0 (by /u/' . $username . ')',
@@ -112,6 +115,7 @@ class RedditService implements PlatformServiceInterface
                     'resubmit'=> 'true',
                     'nsfw'    => 'false',
                 ]);
+
 
             Log::info("RedditService response: " . $response->status() . " " . $response->body());
 

@@ -43,11 +43,12 @@ class CredentialVerifier
                 accessTokenSecret: $cred->access_token_secret
             );
 
-            $response = Http::withoutVerifying()->withHeaders([
+            $response = Http::withoutVerifying()->timeout(3)->withHeaders([
                 'Authorization' => $authHeader,
             ])->get('https://api.twitter.com/2/users/me', [
                 'user.fields' => 'username',
             ]);
+
 
             if ($response->successful()) {
                 $data = $response->json()['data'] ?? [];
@@ -78,10 +79,11 @@ class CredentialVerifier
         }
 
         try {
-            $response = Http::withoutVerifying()->get('https://graph.facebook.com/v18.0/' . $cred->page_id, [
+            $response = Http::withoutVerifying()->timeout(3)->get('https://graph.facebook.com/v18.0/' . $cred->page_id, [
                 'fields'       => 'username,name,id',
                 'access_token' => $cred->page_access_token,
             ]);
+
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -105,10 +107,11 @@ class CredentialVerifier
         }
 
         try {
-            $response = Http::withoutVerifying()->get('https://graph.facebook.com/v18.0/' . $cred->page_id, [
+            $response = Http::withoutVerifying()->timeout(3)->get('https://graph.facebook.com/v18.0/' . $cred->page_id, [
                 'fields'       => 'name,id',
                 'access_token' => $cred->page_access_token,
             ]);
+
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -132,10 +135,11 @@ class CredentialVerifier
         }
 
         try {
-            $response = Http::withoutVerifying()->withToken($cred->li_access_token)
+            $response = Http::withoutVerifying()->timeout(3)->withToken($cred->li_access_token)
                 ->get('https://api.linkedin.com/v2/me', [
                     'projection' => '(localizedFirstName,localizedLastName,id)',
                 ]);
+
 
             if ($response->successful()) {
                 $data = $response->json();
