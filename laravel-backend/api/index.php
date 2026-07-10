@@ -23,6 +23,15 @@ if (!is_dir($viewPath)) mkdir($viewPath, 0777, true);
 putenv("VIEW_COMPILED_PATH={$viewPath}");
 $_ENV['VIEW_COMPILED_PATH'] = $viewPath;
 
+// 2b. Package/Service Discovery caches → /tmp
+putenv("APP_SERVICES_CACHE=/tmp/services.php");
+$_ENV['APP_SERVICES_CACHE'] = '/tmp/services.php';
+$_SERVER['APP_SERVICES_CACHE'] = '/tmp/services.php';
+
+putenv("APP_PACKAGES_CACHE=/tmp/packages.php");
+$_ENV['APP_PACKAGES_CACHE'] = '/tmp/packages.php';
+$_SERVER['APP_PACKAGES_CACHE'] = '/tmp/packages.php';
+
 // 3. Logging → stderr (no file writes)
 putenv("LOG_CHANNEL=stderr");
 $_ENV['LOG_CHANNEL'] = 'stderr';
