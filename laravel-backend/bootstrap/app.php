@@ -18,12 +18,15 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Throwable $e) {
-            return response()->json([
+            header('Content-Type: application/json');
+            http_response_code(500);
+            echo json_encode([
                 'error' => true,
                 'message' => $e->getMessage(),
                 'class' => get_class($e),
                 'file' => $e->getFile(),
                 'line' => $e->getLine()
-            ], 500);
+            ], JSON_PRETTY_PRINT);
+            exit;
         });
     })->create();
