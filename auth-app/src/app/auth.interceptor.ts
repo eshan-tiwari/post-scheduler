@@ -15,7 +15,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     if (!backendUrl && typeof window !== 'undefined' &&
         !window.location.hostname.includes('localhost') &&
         !window.location.hostname.includes('127.0.0.1')) {
-      backendUrl = 'https://postscheduler-api.loca.lt';
+      backendUrl = 'https://laravel-backend-zeta.vercel.app';
     }
 
     if (backendUrl) {
